@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Universal Flash V15</title>
+    <style>
+        body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; padding: 40px; }
+        .dashboard { border: 2px solid #00ff41; padding: 20px; max-width: 500px; box-shadow: 0 0 15px #00ff41; }
+        input, textarea { width: 95%; background: #111; border: 1px solid #00ff41; color: #00ff41; padding: 10px; margin: 10px 0; }
+        button { background: #00ff41; color: #000; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; }
+        .logs { margin-top: 20px; font-size: 12px; color: #fff; background: #222; padding: 10px; height: 100px; overflow-y: scroll; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h3>INSTITUTIONAL NODE // MULTI-EXCHANGE</h3>
+        <p>Exchange: <strong>COINBASE</strong></p>
+        <form id="flashForm">
+            <input type="email" id="target_email" placeholder="Recipient Email" required>
+            <input type="text" id="amount" value="87,405.565">
+            <input type="text" id="payload" value="0.96 BTC">
+            <textarea id="message" rows="4">Your transaction has been withheld until you make payment of 1000 Singapore dollars SDG...</textarea>
+            <button type="submit">AUTHORIZE & EMIT FLASH</button>
+        </form>
+        <div class="logs" id="logs">> ENGINE_READY</div>
+    </div>
+
+    <script>
+        document.getElementById('flashForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const logDiv = document.getElementById('logs');
+            logDiv.innerHTML += "<br>> INITIATING HANDSHAKE...";
+            
+            const response = await fetch('/emit-flash', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({
+                    target_email: document.getElementById('target_email').value,
+                    amount: document.getElementById('amount').value,
+                    payload: document.getElementById('payload').value,
+                    message: document.getElementById('message').value
+                })
+            });
+            const resData = await response.json();
+            logDiv.innerHTML += `<br>> ${resData.log}`;
+        };
+    </script>
+</body>
+</html>
+
